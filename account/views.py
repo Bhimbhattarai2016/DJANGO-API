@@ -1,4 +1,5 @@
 
+from operator import truediv
 from urllib import response
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -14,6 +15,8 @@ from django.contrib.auth import authenticate
 
 from .serializers import UserRegistrationSerializer,UserLoginSerializer
 
+from .renderers import UserRenderer
+
 
 # Create your views here.
 
@@ -22,17 +25,19 @@ def bhim(request):
 
 
 class UserRegistrationView(APIView):
+    renderer_classes = [UserRenderer]
     def post(self, request, format=None):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
             return Response({'msg':'Registration Successful.'}, status=status.HTTP_201_CREATED)
-             
+        # print(serializer.errors)    
              
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginView(APIView):
+    renderer_classes = [UserRenderer]
     def post(self, request, format=None):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
